@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corporate Cab Booking</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <script src="config.js"></script>
+
+  <script>
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
+</head>
+
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-route"></i>
+        <h2>Cab Book</h2>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#bookings" class="nav-link active" data-section="bookings"><i class="fas fa-tachometer-alt"></i>
+              Dashboard</a></li>
+          <li><a href="#newBooking" class="nav-link" data-section="newBooking"><i class="fas fa-plus-circle"></i> New
+              Booking</a></li>
+          <li><a href="#liveMap" class="nav-link" data-section="liveMap"><i class="fas fa-map-marked-alt"></i> Live
+              Tracker</a></li>
+          <li><a href="#invoices" class="nav-link" data-section="invoices"><i class="fas fa-file-invoice-dollar"></i>
+              Invoices & Billing</a></li>
+        </ul>
+      </nav>
+      <div class="footer-info">
+        <p>&copy; 2025 ashmittomar CAB BOOK SYSTEM</p>
+      </div>
+    </aside>
+
+    <main class="content-area">
+      <header class="top-header">
+        <h1>Welcome, Corporate User!</h1>
+        <div class="user-profile">
+          <span><i class="fas fa-user-circle"></i> User Account</span>
+        </div>
+      </header>
+
+      <section id="bookings" class="dashboard-section active">
+        <h2 class="section-title"><i class="fas fa-book-open"></i> Booking Dashboard</h2>
+        <div class="tabs">
+          <button onclick="AppController.showTab('ongoing', this)" class="tab-button active"
+            data-tab="ongoing">Ongoing</button>
+          <button onclick="AppController.showTab('upcoming', this)" class="tab-button"
+            data-tab="upcoming">Upcoming</button>
+          <button onclick="AppController.showTab('completed', this)" class="tab-button"
+            data-tab="completed">Completed</button>
+        </div>
+        <div class="tab-content-wrapper">
+          <div class="tab-content" id="ongoing">
+            <div class="empty-state"><i class="fas fa-circle-notch fa-spin"></i> Checking for active trips...</div>
+          </div>
+          <div class="tab-content" id="upcoming">
+            <div class="empty-state"><i class="fas fa-calendar-alt"></i> No scheduled future trips found.</div>
+          </div>
+          <div class="tab-content" id="completed">
+            <div class="empty-state"><i class="fas fa-history"></i> Listing of historical trips.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="newBooking" class="dashboard-section">
+        <h2 class="section-title"><i class="fas fa-taxi"></i> Place New Booking</h2>
+        <form id="bookingForm" class="booking-grid card">
+          <div class="form-group grid-span-2">
+            <label for="pickupLocation"><i class="fas fa-map-marker-alt"></i> Pickup Location</label>
+            <input type="text" id="pickupLocation" placeholder="Enter Pickup Location" required />
+          </div>
+          <div class="form-group grid-span-2">
+            <label for="dropoffLocation"><i class="fas fa-map-pin"></i> Drop-off Location</label>
+            <input type="text" id="dropoffLocation" placeholder="Enter Drop-off Location" required />
+          </div>
+
+          <div class="form-group date-time-group">
+            <label for="tripDate"><i class="fas fa-calendar-day"></i> Pickup Date</label>
+            <input type="date" id="tripDate" required />
+          </div>
+          <div class="form-group date-time-group">
+            <label for="tripTime"><i class="fas fa-clock"></i> Pickup Time</label>
+            <input type="time" id="tripTime" required />
+          </div>
+          <div class="form-group">
+            <label for="tripType"><i class="fas fa-road"></i> Trip Type</label>
+            <select id="tripType" required>
+              <option disabled selected>Select Trip Type</option>
+              <option value="local">Local (Point-to-Point)</option>
+              <option value="outstation">Outstation (Intercity)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="passengers"><i class="fas fa-users"></i> No. of Passengers</label>
+            <input type="number" id="passengers" placeholder="Max 6" min="1" max="6" required />
+          </div>
+
+          <div class="form-group">
+            <label for="guestName"><i class="fas fa-user"></i> Guest Name</label>
+            <input type="text" id="guestName" placeholder="Guest Name" required />
+          </div>
+          <div class="form-group">
+            <label for="emailId"><i class="fas fa-envelope"></i> Email ID</label>
+            <input type="email" id="emailId" placeholder="Email ID" required />
+          </div>
+          <div class="form-group">
+            <label for="mobileNumber"><i class="fas fa-phone"></i> Mobile Number</label>
+            <input type="tel" id="mobileNumber" placeholder="Mobile Number" required />
+          </div>
+
+          <div class="form-group">
+            <label for="vehicleType"><i class="fas fa-car-side"></i> Vehicle Type</label>
+            <select id="vehicleType" required>
+              <option disabled selected>Select Vehicle</option>
+              <option>Sedan (4 Seater)</option>
+              <option>SUV (6 Seater)</option>
+              <option>Luxury</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="vendorSelect"><i class="fas fa-handshake"></i> Vendor</label>
+            <select id="vendorSelect" required>
+              <option disabled selected>Select Vendor</option>
+              <option>Vendor A (Premium)</option>
+              <option>Vendor B (Standard)</option>
+            </select>
+          </div>
+          <div class="form-group grid-span-2">
+            <label for="notes"><i class="fas fa-sticky-note"></i> Special Notes / Requirements</label>
+            <textarea id="notes" rows="2" placeholder="e.g., Airport drop-off, luggage assistance..."></textarea>
+          </div>
+
+
+          <button type="submit" class="submit-button grid-span-2">
+            <i class="fas fa-check-circle"></i> Confirm & Submit Booking
+          </button>
+        </form>
+      </section>
+
+      <section id="liveMap" class="dashboard-section">
+        <h2 class="section-title"><i class="fas fa-street-view"></i> Live Cab Tracker</h2>
+        <div id="mapPlaceholder" class="card map-container"></div>
+      </section>
+
+      <section id="invoices" class="dashboard-section">
+        <h2 class="section-title"><i class="fas fa-file-alt"></i> Invoices & Billing</h2>
+        <div id="invoiceList" class="card invoice-list-container">
+          <div class="invoice-item">
+            <span class="invoice-id">INV-2025-001</span>
+            <span class="invoice-details">Date: Oct 1, 2025 | Amount: <strong>$250.00</strong></span>
+            <a href="#" class="download-link"><i class="fas fa-download"></i> Download</a>
+          </div>
+          <div class="invoice-item">
+            <span class="invoice-id">INV-2025-002</span>
+            <span class="invoice-details">Date: Sep 25, 2025 | Amount: <strong>$180.50</strong></span>
+            <a href="#" class="download-link"><i class="fas fa-download"></i> Download</a>
+          </div>
+          <div class="empty-state" style="display:none;">No invoices found.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
